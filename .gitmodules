@@ -1,0 +1,3 @@
+[submodule "fake-vruc-oauth2"]
+	path = fake-vruc-oauth2
+	url = https://github.com/panjd123/fake-vruc-oauth2.git

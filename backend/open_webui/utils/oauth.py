@@ -282,6 +282,8 @@ class OAuthManager:
                 except Exception as e:
                     log.warning(f"Error fetching GitHub email: {e}")
                     raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
+            elif provider == "vruc":
+                email = "test@ruc.edu.cn"
             else:
                 log.warning(f"OAuth callback failed, email is missing: {user_data}")
                 raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)

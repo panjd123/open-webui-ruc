@@ -400,6 +400,36 @@ OAUTH_CLIENT_SECRET = PersistentConfig(
     os.environ.get("OAUTH_CLIENT_SECRET", ""),
 )
 
+VRUC_CLIENT_ID = PersistentConfig(
+    "VRUC_CLIENT_ID",
+    "oauth.vruc.client_id",
+    os.environ.get("VRUC_CLIENT_ID", "vruc_test_client"),
+)
+
+VRUC_CLIENT_SECRET = PersistentConfig(
+    "VRUC_CLIENT_SECRET",
+    "oauth.vruc.client_secret",
+    os.environ.get("VRUC_CLIENT_SECRET", "vruc_test_secret"),
+)
+
+VRUC_AUTH_HOST = PersistentConfig(
+    "VRUC_AUTH_HOST",
+    "oauth.vruc.auth_host",
+    os.environ.get("VRUC_AUTH_HOST", "http://localhost:8000"), # debug
+) # https://v.ruc.edu.cn
+
+VRUC_OAUTH_SCOPE = PersistentConfig(
+    "VRUC_OAUTH_SCOPE",
+    "oauth.vruc.scope",
+    os.environ.get("VRUC_OAUTH_SCOPE", "userinfo profile"),
+)
+
+VRUC_REDIRECT_URI = PersistentConfig(
+    "VRUC_REDIRECT_URI",
+    "oauth.vruc.redirect_uri",
+    os.environ.get("VRUC_REDIRECT_URI", ""),
+)
+
 OPENID_PROVIDER_URL = PersistentConfig(
     "OPENID_PROVIDER_URL",
     "oauth.oidc.provider_url",
@@ -577,6 +607,36 @@ def load_oauth_providers():
             "name": OAUTH_PROVIDER_NAME.value,
             "redirect_uri": OPENID_REDIRECT_URI.value,
             "register": oidc_oauth_register,
+        }
+    
+    if (
+        VRUC_CLIENT_ID.value
+        and VRUC_CLIENT_SECRET.value
+    ):
+        
+        def vruc_oauth_register(client):
+            client.register(
+                name="vruc",
+                client_id=VRUC_CLIENT_ID.value,
+                client_secret=VRUC_CLIENT_SECRET.value,
+                authorize_url=f"{VRUC_AUTH_HOST.value}/oauth2/authorize",
+                access_token_url=f"{VRUC_AUTH_HOST.value}/oauth2/token",
+                userinfo_endpoint=f"{VRUC_AUTH_HOST.value}/apis/oauth2/v1/user",
+                access_token_params = {
+                    "client_id": VRUC_CLIENT_ID.value,
+                    "client_secret": VRUC_CLIENT_SECRET.value
+                },
+                client_kwargs={
+                    "scope": VRUC_OAUTH_SCOPE.value,
+                },
+                redirect_uri=VRUC_REDIRECT_URI.value,
+            )
+
+        OAUTH_PROVIDERS["vruc"] = {
+            "name": "vruc",
+            "redirect_uri": VRUC_REDIRECT_URI.value,
+            "register": vruc_oauth_register,
+            "sub_claim": "uid",
         }
 
 
