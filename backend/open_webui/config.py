@@ -634,6 +634,12 @@ def load_oauth_providers():
 
         OAUTH_PROVIDERS["vruc"] = {
             "name": "vruc",
+            "client_id": VRUC_CLIENT_ID.value,
+            "client_secret": VRUC_CLIENT_SECRET.value,
+            "authorize_url": f"{VRUC_AUTH_HOST.value}/oauth2/authorize",
+            "access_token_url": f"{VRUC_AUTH_HOST.value}/oauth2/token",
+            "userinfo_endpoint": f"{VRUC_AUTH_HOST.value}/apis/oauth2/v1/user",
+            "profile_endpoint": f"{VRUC_AUTH_HOST.value}/apis/oauth2/v1/profile",
             "redirect_uri": VRUC_REDIRECT_URI.value,
             "register": vruc_oauth_register,
             "sub_claim": "uid",

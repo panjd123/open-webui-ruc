@@ -4,6 +4,7 @@ import mimetypes
 import sys
 import uuid
 
+import asyncio
 import aiohttp
 from authlib.integrations.starlette_client import OAuth
 from authlib.oidc.core import UserInfo
@@ -233,12 +234,46 @@ class OAuthManager:
         except Exception as e:
             log.warning(f"OAuth callback error: {e}")
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
-        user_data: UserInfo = token.get("userinfo")
-        if not user_data or "email" not in user_data:
-            user_data: UserInfo = await client.userinfo(token=token)
-        if not user_data:
-            log.warning(f"OAuth callback failed, user data is missing: {token}")
-            raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
+        if provider == "vruc": # http://chat1.ruc.panjd.net/oauth/vruc/login
+            provider_dict = OAUTH_PROVIDERS[provider]
+            access_token = token.get("access_token")
+            async with aiohttp.ClientSession() as session:
+                reqs = await asyncio.gather(
+                    session.get(
+                        provider_dict["userinfo_endpoint"],
+                        headers={"Authorization": f"Bearer {access_token}"},
+                    ),
+                    session.get(
+                        provider_dict["profile_endpoint"],
+                        headers={"Authorization": f"Bearer {access_token}"},
+                    ),
+                )
+                userinfo_data, profile_data = await asyncio.gather(
+                    reqs[0].json(),
+                    reqs[1].json(),
+                )
+            stuid = None
+            for linked_account in userinfo_data.get("linkedaccounts", []):
+                if linked_account["host"] == "ruc":
+                    stuid = linked_account["username"]
+                    break
+            user_data = {
+                "uid": userinfo_data["uid"],
+                "name": userinfo_data["name"],
+                "email": f"{stuid}@ruc.edu.cn" if stuid else userinfo_data["email"],
+                "email0": userinfo_data.get("email", None),
+                "phone": userinfo_data.get("phone", None),
+                "birthday": userinfo_data.get("birthday", None),
+                "profiles" : profile_data["profiles"]
+            }
+            log.info(f"VRUC user data: {user_data}")
+        else:
+            user_data: UserInfo = token.get("userinfo")
+            if not user_data or "email" not in user_data:
+                user_data: UserInfo = await client.userinfo(token=token)
+            if not user_data:
+                log.warning(f"OAuth callback failed, user data is missing: {token}")
+                raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
 
         sub = user_data.get(OAUTH_PROVIDERS[provider].get("sub_claim", "sub"))
         if not sub:
@@ -282,8 +317,6 @@ class OAuthManager:
                 except Exception as e:
                     log.warning(f"Error fetching GitHub email: {e}")
                     raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
-            elif provider == "vruc":
-                email = "test@ruc.edu.cn"
             else:
                 log.warning(f"OAuth callback failed, email is missing: {user_data}")
                 raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
