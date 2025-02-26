@@ -110,47 +110,54 @@ DEFAULT_CONFIG = {
         "prompt_suggestions": [
             {
                 "title": [
-                    "Help me study",
-                    "vocabulary for a college entrance exam",
+                    "帮我介绍我所在的大学",
+                    "中国人民大学的简介",
                 ],
-                "content": "Help me study vocabulary: write a sentence for me to fill in the blank, and I'll try to pick the correct option.",
-            },
-            {
-                "title": [
-                    "Give me ideas",
-                    "for what to do with my kids' art",
-                ],
-                "content": "What are 5 creative things I could do with my kids' art? I don't want to throw them away, but it's also so much clutter.",
-            },
-            {
-                "title": ["Tell me a fun fact", "about the Roman Empire"],
-                "content": "Tell me a random fun fact about the Roman Empire",
-            },
-            {
-                "title": [
-                    "Show me a code snippet",
-                    "of a website's sticky header",
-                ],
-                "content": "Show me a code snippet of a website's sticky header in CSS and JavaScript.",
-            },
-            {
-                "title": [
-                    "Explain options trading",
-                    "if I'm familiar with buying and selling stocks",
-                ],
-                "content": "Explain options trading in simple terms if I'm familiar with buying and selling stocks.",
-            },
-            {
-                "title": ["Overcome procrastination", "give me tips"],
-                "content": "Could you start by asking me about instances when I procrastinate the most and then give me some suggestions to overcome it?",
-            },
-            {
-                "title": [
-                    "Grammar check",
-                    "rewrite it for better readability ",
-                ],
-                "content": 'Check the following sentence for grammar and clarity: "[sentence]". Rewrite it for better readability while maintaining its original meaning.',
-            },
+                "content": "简单向我介绍中国人民大学：学校的历史、学校的特色、学校的校训等。",
+            }
+            # {
+            #     "title": [
+            #         "Help me study",
+            #         "vocabulary for a college entrance exam",
+            #     ],
+            #     "content": "Help me study vocabulary: write a sentence for me to fill in the blank, and I'll try to pick the correct option.",
+            # },
+            # {
+            #     "title": [
+            #         "Give me ideas",
+            #         "for what to do with my kids' art",
+            #     ],
+            #     "content": "What are 5 creative things I could do with my kids' art? I don't want to throw them away, but it's also so much clutter.",
+            # },
+            # {
+            #     "title": ["Tell me a fun fact", "about the Roman Empire"],
+            #     "content": "Tell me a random fun fact about the Roman Empire",
+            # },
+            # {
+            #     "title": [
+            #         "Show me a code snippet",
+            #         "of a website's sticky header",
+            #     ],
+            #     "content": "Show me a code snippet of a website's sticky header in CSS and JavaScript.",
+            # },
+            # {
+            #     "title": [
+            #         "Explain options trading",
+            #         "if I'm familiar with buying and selling stocks",
+            #     ],
+            #     "content": "Explain options trading in simple terms if I'm familiar with buying and selling stocks.",
+            # },
+            # {
+            #     "title": ["Overcome procrastination", "give me tips"],
+            #     "content": "Could you start by asking me about instances when I procrastinate the most and then give me some suggestions to overcome it?",
+            # },
+            # {
+            #     "title": [
+            #         "Grammar check",
+            #         "rewrite it for better readability ",
+            #     ],
+            #     "content": 'Check the following sentence for grammar and clarity: "[sentence]". Rewrite it for better readability while maintaining its original meaning.',
+            # },
         ],
     },
 }
