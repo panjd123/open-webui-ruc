@@ -453,7 +453,7 @@
 
 										<span
 											>{$i18n.t('Continue with {{provider}}', {
-												provider: $config?.oauth?.providers?.vruc ?? 'SSO'
+												provider: "微人大"
 											})}</span
 										>
 									</button>
