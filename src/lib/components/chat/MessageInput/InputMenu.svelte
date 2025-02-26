@@ -68,6 +68,7 @@
 	}
 </script>
 
+{#if fileUploadEnabled}
 <!-- Hidden file input used to open the camera on mobile -->
 <input
 	id="camera-input"
@@ -228,3 +229,4 @@
 		</DropdownMenu.Content>
 	</div>
 </Dropdown>
+{/if}

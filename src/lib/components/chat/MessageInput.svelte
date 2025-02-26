@@ -1196,7 +1196,7 @@
 									</div>
 
 									<div class="self-end flex space-x-1 mr-1 shrink-0">
-										{#if !history?.currentId || history.messages[history.currentId]?.done == true}
+										{#if (!history?.currentId || history.messages[history.currentId]?.done == true) && _user?.role === 'admin'}
 											<Tooltip content={$i18n.t('Record voice')}>
 												<button
 													id="voice-input-button"
@@ -1246,7 +1246,7 @@
 										{/if}
 
 										{#if !history.currentId || history.messages[history.currentId]?.done == true}
-											{#if prompt === '' && files.length === 0}
+											{#if prompt === '' && files.length === 0 && _user?.role === 'admin'}
 												<div class=" flex items-center">
 													<Tooltip content={$i18n.t('Call')}>
 														<button
