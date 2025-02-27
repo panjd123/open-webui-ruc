@@ -1,8 +1,10 @@
 PORT="${PORT:-8081}"
+
 export ENABLE_LOGIN_FORM=True
 export ENABLE_SIGNUP=False
 export ENABLE_OAUTH_SIGNUP=True
 
+export ENABLE_COMMUNITY_SHARING=False
 export USER_PERMISSIONS_CHAT_EDIT=False
 export USER_PERMISSIONS_CHAT_CONTROLS=False
 export USER_PERMISSIONS_CHAT_FILE_UPLOAD=False
@@ -12,7 +14,15 @@ export USER_PERMISSIONS_FEATURES_IMAGE_GENERATION=False
 export USER_PERMISSIONS_FEATURES_CODE_INTERPRETER=False
 
 export DEFAULT_USER_ROLE="user"
-export VRUC_CLIENT_ID="67bf09c390f4d1021d973a5f.apps"
-export VRUC_CLIENT_SECRET="_YACLMVER7qa_PD7QmHj0X7bRyMjx-iNHsyiJdN8w8s"
+
+export VRUC_CLIENT_ID=""
+export VRUC_CLIENT_SECRET=""
 export VRUC_AUTH_HOST="https://v.ruc.edu.cn"
+export VRUC_AUTH_ENDPOINT="/oauth2/authorize"
+export VRUC_TOKEN_ENDPOINT="/oauth2/token"
+
+export OPENAI_API_BASE_URL=""
+export OPENAI_API_KEY=""
+export ENABLE_OLLAMA_API=False
+
 uvicorn open_webui.main:app --port $PORT --host 0.0.0.0 --forwarded-allow-ips '*' --reload
