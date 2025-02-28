@@ -1,0 +1,99 @@
+#!/bin/bash
+
+BASE_PORT="${BASE_PORT:-8081}"
+WORKERS="${WORKERS:-4}"
+PID_FILE="${PID_FILE:-open_webui.pid}"
+
+export ENABLE_LOGIN_FORM=True
+export ENABLE_SIGNUP=False
+export ENABLE_OAUTH_SIGNUP=True
+
+export ENABLE_COMMUNITY_SHARING=False
+export USER_PERMISSIONS_CHAT_EDIT=False
+export USER_PERMISSIONS_CHAT_CONTROLS=False
+export USER_PERMISSIONS_CHAT_FILE_UPLOAD=False
+export USER_PERMISSIONS_CHAT_TEMPORARY=False
+export USER_PERMISSIONS_FEATURES_WEB_SEARCH=False
+export USER_PERMISSIONS_FEATURES_IMAGE_GENERATION=False
+export USER_PERMISSIONS_FEATURES_CODE_INTERPRETER=False
+
+export DEFAULT_USER_ROLE="user"
+
+export VRUC_CLIENT_ID="" # TODO
+export VRUC_CLIENT_SECRET="" # TODO
+export VRUC_AUTH_HOST="https://v.ruc.edu.cn"
+export VRUC_AUTH_ENDPOINT="/oauth2/authorize"
+export VRUC_TOKEN_ENDPOINT="/oauth2/token"
+
+export OPENAI_API_BASE_URL="" # TODO
+export OPENAI_API_KEY="" # TODO
+export ENABLE_OLLAMA_API=False
+
+check_pid() {
+    if [ -f "$PID_FILE" ]; then
+        while read -r pid; do
+            if ps -p "$pid" > /dev/null; then
+                echo "PID $pid is still running."
+                return 0  # 有进程在运行
+            fi
+        done < "$PID_FILE"
+        echo "No processes from $PID_FILE are running."
+        rm -f "$PID_FILE"  # 如果没有运行，清空 PID 文件
+        return 1
+    else
+        echo "No PID file found."
+        return 1
+    fi
+}
+
+case "$1" in
+    start)
+        echo "Checking existing processes..."
+        if check_pid; then
+            echo "Some instances are already running. Please stop them first."
+            exit 1
+        fi
+        echo "Starting $WORKERS uvicorn instances..."
+        for ((i=0; i<WORKERS; i++)); do
+            PORT=$((BASE_PORT + i))
+            uvicorn open_webui.main:app --port "$PORT" --host 0.0.0.0 --forwarded-allow-ips '*' &
+            pid=$!
+            echo $pid >> "$PID_FILE"
+            echo "Started instance on port $PORT with PID $pid"
+        done
+    ;;
+    stop)
+        echo "Checking existing processes..."
+        if ! check_pid; then
+            echo "No running instances to stop."
+            exit 1
+        fi
+        echo "Stopping all instances..."
+        while read -r pid; do
+            if ps -p "$pid" > /dev/null; then
+                kill "$pid" && echo "Stopped PID $pid"
+            else
+                echo "PID $pid was already stopped."
+            fi
+        done < "$PID_FILE"
+        rm -f "$PID_FILE"
+    ;;
+    status)
+        if [ -f "$PID_FILE" ]; then
+            echo "Running instances:"
+            while read -r pid; do
+                if ps -p "$pid" > /dev/null; then
+                    echo "PID $pid is running"
+                else
+                    echo "PID $pid is stopped"
+                fi
+            done < "$PID_FILE"
+        else
+            echo "No instances running or PID file missing."
+        fi
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|status}"
+        exit 1
+    ;;
+esac
