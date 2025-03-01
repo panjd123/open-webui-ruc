@@ -4,7 +4,7 @@ BASE_PORT="${BASE_PORT:-8081}"
 WORKERS="${WORKERS:-4}"
 PID_FILE="${PID_FILE:-open_webui.pid}"
 
-export ENABLE_LOGIN_FORM=True
+export ENABLE_LOGIN_FORM=False
 export ENABLE_SIGNUP=False
 export ENABLE_OAUTH_SIGNUP=True
 
@@ -24,6 +24,8 @@ export VRUC_CLIENT_SECRET="" # TODO
 export VRUC_AUTH_HOST="https://v.ruc.edu.cn"
 export VRUC_AUTH_ENDPOINT="/oauth2/authorize"
 export VRUC_TOKEN_ENDPOINT="/oauth2/token"
+
+export DATABASE_URL="" # TODO
 
 export OPENAI_API_BASE_URL="" # TODO
 export OPENAI_API_KEY="" # TODO

@@ -1,54 +1,75 @@
-## Quick Start
+# 部署指南
 
-### Clone the repository
+1. 环境配置
 
-```bash
-git clone --recurse-submodules https://github.com/panjd123/open-webui-ruc.git
-# or
-git clone --recurse-submodules git@github.com:panjd123/open-webui-ruc.git
-```
+    ```bash
+    # sudo apt-get install git
 
-### Frontend (debug only)
+    # miniconda
+    bash Miniconda3-latest-Linux-x86_64.sh -b
+    ~/miniconda3/bin/conda init
 
-```bash
-cp -RPp .env.example .env
-npm install
-npm run dev
-```
+    # nodejs/npm
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+    nvm install --lts
 
-### Backend
+    # repo
+    git clone https://github.com/panjd123/open-webui-ruc.git
+    cd open-webui-ruc
 
-```bash
-cd backend
-conda create --name open-webui python=3.11
-conda activate open-webui
-pip install -r requirements.txt -U
-sh dev.sh
-```
+    # frontend
+    npm install
+    npm run build
 
-### Fake vruc oauth2 for development
+    # backend
+    cd backend
+    conda env create --name webui python=3.12
+    conda activate webui
+    pip install -r requirements.txt
+    ```
 
-```bash
-conda activate open-webui
-cd fake-vruc-oauth2
-python main.py
-```
 
-## Known Bugs
+2. 修改一些参数
 
-If you deploy the frontend and backend separately, auth will not work correctly.
+    1. `backend/prod.sh.example` 是启动脚本，你需要补充其中所有标注了 `TODO` 的地方，你可以参考腾讯文档。
+    2. `backend/prod.sh` 的使用方法是
 
-After login, it will redirect to `http://localhost:8080/auth#token=xxxx`, but backend(8080) will not handle this request, it is handled by frontend server (5137). 
+        ```bash
+        # cp prod.sh.example prod.sh
+        bash prod.sh start
+        bash prod.sh stop
+        bash prod.sh restart
+        ```
 
-You need to manually update the url to `http://localhost:5137/auth#token=xxxx` to login.
+        需要注意其中开头的参数，`WORKERS` 决定了启动的线程数，默认是 4，`BASE_PORT` 是端口的起点，默认是 8001，比如 4 个进程就会变成起在 8001, 8002, 8003, 8004 上，这需要和 nginx 的配置文件保持一致
+    3. `backend/nginx.conf.example` 是 nginx 配置文件的示例，目前没有配置 ssl，所以有了证书还要改一下相关内容，现在是写在 80 端口上，你需要注意的就是开头 `upstream uvicorn_backend` 中的配置，其中的 `server` 需要和 `prod.sh` 中你启动的一致。
 
-### How to solve
+3. open-webui 的小细节
 
-In production, run `npm run build`, then run `sh dev.sh` in backend folder.
+    - 模型他默认是不公开给 user 的，你需要在管理员界面里改一下。
 
-It will serve the frontend and backend in the same port.
+4. 最后
 
-## Note
+    nginx 的配置文件一般放到 `/etc/nginx/sites-enabled/` 下就行了
 
-1. Based on v0.5.15, there are some bugs in latest version, so we use v0.5.15: https://github.com/open-webui/open-webui/discussions/10793
-2. If you can't reach backend, try to restart the frontend/backend server (order matters?).
+    ```bash
+    cp backend/nginx.conf.example /etc/nginx/sites-enabled/webui.conf
+    # 修改一下：1. server_name 2. upstream 3. ssl(443)
+    ```
+
+    ```bash
+    nginx -t
+    nginx -s reload
+    ```
+
+    ```
+    cd ~/open-webui-ruc/backend
+    conda activate webui
+    bash prod.sh start
+    ```
+
+5. TODO
+
+    - 没有测试 litellm 限流后的效果
+    - 没有测试 nginx 的负载均衡（能跑，但是不知道效果怎么样）
+    - 没有测试 nginx 的 ssl
