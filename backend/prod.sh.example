@@ -58,7 +58,7 @@ case "$1" in
         echo "Starting $WORKERS uvicorn instances..."
         for ((i=0; i<WORKERS; i++)); do
             PORT=$((BASE_PORT + i))
-            uvicorn open_webui.main:app --port "$PORT" --host 0.0.0.0 --forwarded-allow-ips '*' &
+            uvicorn open_webui.main:app --port "$PORT" --host 127.0.0.1 >> webui.log &
             pid=$!
             echo $pid >> "$PID_FILE"
             echo "Started instance on port $PORT with PID $pid"
