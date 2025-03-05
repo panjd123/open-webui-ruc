@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_PORT="${BASE_PORT:-8081}"
-WORKERS="${WORKERS:-4}"
+WORKERS="${WORKERS:-16}"
 PID_FILE="${PID_FILE:-open_webui.pid}"
 
 export ENABLE_LOGIN_FORM=True
@@ -19,16 +19,17 @@ export USER_PERMISSIONS_FEATURES_CODE_INTERPRETER=False
 
 export DEFAULT_USER_ROLE="user"
 
-export VRUC_CLIENT_ID="" # TODO
-export VRUC_CLIENT_SECRET="" # TODO
+export VRUC_CLIENT_ID=""        # TODO
+export VRUC_CLIENT_SECRET=""    # TODO
+
 export VRUC_AUTH_HOST="https://v.ruc.edu.cn"
 export VRUC_AUTH_ENDPOINT="/oauth2/authorize"
 export VRUC_TOKEN_ENDPOINT="/oauth2/token"
 
-export DATABASE_URL="" # TODO
+export DATABASE_URL=""          # TODO
 
-export OPENAI_API_BASE_URL="" # TODO
-export OPENAI_API_KEY="" # TODO
+export OPENAI_API_BASE_URL=""   # TODO
+export OPENAI_API_KEY=""        # TODO
 export ENABLE_OLLAMA_API=False
 
 check_pid() {
@@ -58,7 +59,7 @@ case "$1" in
         echo "Starting $WORKERS uvicorn instances..."
         for ((i=0; i<WORKERS; i++)); do
             PORT=$((BASE_PORT + i))
-            uvicorn open_webui.main:app --port "$PORT" --host 127.0.0.1 >> webui.log &
+            uvicorn open_webui.main:app --port "$PORT" --host 127.0.0.1 2>&1 | tee -a webui.log >> webui_$i.log &
             pid=$!
             echo $pid >> "$PID_FILE"
             echo "Started instance on port $PORT with PID $pid"
