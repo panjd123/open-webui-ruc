@@ -256,6 +256,13 @@
 					{scrollEnd}
 				/>
 			</div>
+
+			<div>
+				<p style="text-align: center; font-size: 14px;">
+					本服务由中国人民大学大型科学仪器共享平台提供<br>
+					由于计算资源有限，系统控制每分钟接收的请求数，当你遇到报错时可能说明服务正忙，敬请谅解，我们正积极寻求扩容计算资源
+				</p>
+			</div>
 		</Pane>
 
 		{#if !largeScreen}
